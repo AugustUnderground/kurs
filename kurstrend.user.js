@@ -25,23 +25,62 @@
 // @include       https://www.derivate.bnpparibas.com/realtime*
 // ==/UserScript==
 
-var h2s = document.getElementsByTagName('h2');
-h2s[2].innerHTML = "AKTUELLER KURS TREND";
+var progressbar =  '<div id="progressbar"><div id="bar"></div></div>'+
+										'<style>'+
+             					'#progressbar'+
+             					'{'+
+                 					'background-color: #ff6142;'+
+                 					'border-radius: 13px;'+
+                 					'padding: 0px;'+
+             					'}'+
+ 
+             					'#progressbar > div'+
+             					'{'+
+                					'background-color: #00a66b;'+
+                					'width: 70%;'+
+                					'height: 20px;'+
+                					'border-radius: 13px;'+
+             					'}'+
+         					'</style>';
 
-var trends = document.getElementsByClassName("tv-change-abs");
-var spans = document.getElementsByTagName("span");
+var header = document.getElementsByClassName('content-control header');
+header[0].innerHTML = progressbar;
 
-for(i = 0; i < spans.length; i++)
+var trends = Array.prototype.slice.call(document.getElementsByClassName("tv-change-abs"));
+var table = document.getElementById("realtime-table");
+var course = document.evaluate("//span[@data-field='_changeAbsolute']", table, null, XPathResult.UNORDERED_NODE_SNAPSHOT_TYPE, null);
+trends.shift();
+
+var key = [];
+var value = [];
+var currentValues = [];
+
+for(var i = 0; i < course.snapshotLength; i++)
 {
-	var style = spans[i].getAttribute("style"); 
-  if(style != null)
-  {
-    if(style.indexOf("background-color") != -1)
-    	{console.log(style);}
-  }
+  key.push(trends[i].children[0].getAttribute("data-item"));
+  value.push(parseFloat(course.snapshotItem(i).innerHTML.replace(",", ".")));
 }
 
-var table = document.getElementById("realtime-table");
-var course = document.evaluate("//span[@data-field='last']", table, null, XPathResult.UNORDERED_NODE_SNAPSHOT_TYPE, null);
-for(var i = 0; i < course.snapshotLength; i++)
-	{console.log(course.snapshotItem(i).innerHTML);}
+currentValues.push(key);
+currentValues.push(value);
+
+function updateValues()
+{
+  var rising = 50;
+  var falling = 50;
+  
+	for(var i = 0; i < course.snapshotLength; i++)
+	{
+    var newValue = parseFloat(course.snapshotItem(i).innerHTML.replace(",", "."));
+    if(newValue > currentValues[1][i])
+    	{rising++;falling--}
+    else if(newValue < currentValues[1][i])
+    	{rising--;falling++;}
+    document.getElementById("bar").style.width = rising + "%";
+    //console.log(trends[i].children[0].getAttribute("data-item") + ": " + course.snapshotItem(i).innerHTML.replace(",", "."));
+  }
+  
+  window.setTimeout(updateValues, 1000);
+}
+
+updateValues();
