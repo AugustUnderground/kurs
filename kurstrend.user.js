@@ -15,7 +15,7 @@
 // Accept the default configuration and install.
 //
 // To uninstall, go to Tools/Manage User Scripts,
-// select "Hello World", and click Uninstall.
+// select "Stock Trend", and click Uninstall.
 //
 // −−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−
 //
