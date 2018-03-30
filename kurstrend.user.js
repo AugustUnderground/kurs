@@ -26,24 +26,24 @@
 // ==/UserScript==
 
 var header = document.getElementsByClassName('content-control header');
-var progressbar =  '<div id="progressbar"><div id="bar"></div></div>'+
-										'<style>'+
-             					'#progressbar'+
-             					'{'+
-                 					'background-color: #ff6142;'+
-    											'width: 85%;'+
-                 					'border-radius: 3px;'+
-                 					'padding: 0px;'+
-             					'}'+
- 
-             					'#progressbar > div'+
-             					'{'+
-                					'background-color: #00a66b;'+
-                					'width: 70%;'+
-                					'height: 20px;'+
-                					'border-radius: 3px;'+
-             					'}'+
-         					'</style>';
+var progressbar =   '<div id="progressbar"><div id="bar"></div></div>'+
+                    '<style>'+
+                        '#progressbar'+
+                        '{'+
+                            'background-color: #ff6142;'+
+                            'width: 85%;'+
+                            'border-radius: 3px;'+
+                            'padding: 0px;'+
+                        '}'+
+
+                        '#progressbar > div'+
+                        '{'+
+                            'background-color: #00a66b;'+
+                            'width: 70%;'+
+                            'height: 20px;'+
+                            'border-radius: 3px;'+
+                        '}'+
+                    '</style>';
 
 var table = document.getElementById("realtime-table");
 var course = document.evaluate("//span[@data-field='_changeAbsolute']", table, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
@@ -54,47 +54,47 @@ var current = [];
 
 function init()
 {
-	header[0].innerHTML = progressbar;
-  for(var i = 0; i < course.snapshotLength; i++)
-	{
-    trend.push("0");
-  	value.push(parseFloat(course.snapshotItem(i).innerHTML.replace(",", ".")));
-	}
+    header[0].innerHTML = progressbar;
+    for(var i = 0; i < course.snapshotLength; i++)
+    {
+        trend.push("0");
+        value.push(parseFloat(course.snapshotItem(i).innerHTML.replace(",", ".")));
+    }
 
-	current.push(trend);
-	current.push(value);
+    current.push(trend);
+    current.push(value);
 }
 
 function updateValues()
 {
-  var falling = 0;
-  var rising = 0;
-  
-	for(var i = 0; i < course.snapshotLength; i++)
-	{
-  	var newValue = parseFloat(course.snapshotItem(i).innerHTML.replace(",", "."));
+    var falling = 0;
+    var rising = 0;
+
+    for(var i = 0; i < course.snapshotLength; i++)
+    {
+    var newValue = parseFloat(course.snapshotItem(i).innerHTML.replace(",", "."));
     if(newValue > current[1][i])
-  		{current[0][i] = "+";rising++;}
+        {current[0][i] = "+";rising++;}
     else if(newValue < current[1][i])
-    	{current[0][i] = "-";falling++;}
+        {current[0][i] = "-";falling++;}
     else
     {
-    	if(current[0][i] == "+")
-      	{rising++;}
-      else if(current[0][i] == "-")
-      	{falling++;}
+        if(current[0][i] == "+")
+            {rising++;}
+        else if(current[0][i] == "-")
+            {falling++;}
     }
-    
+
     current[1][i] = newValue;
-    
+
     var trend = rising * 100 / (rising + falling);
     document.getElementById("bar").style.width = trend + "%";
-    
+
     //if(currentValues[0][i] != "0")
     //	{console.log("(" + i + ") " + currentValues[0][i] + ": " + currentValues[1][i]);}
-  }
-  
-  window.setTimeout(updateValues, 1000);
+    }
+
+    window.setTimeout(updateValues, 1000);
 }
 
 init();
