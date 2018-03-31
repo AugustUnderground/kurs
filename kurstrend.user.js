@@ -26,7 +26,10 @@
 // ==/UserScript==
 
 var header = document.getElementsByClassName('content-control header');
-var progressbar =   '<div id="progressbar"><div id="bar"></div></div>'+
+var progressbar =   '<div id="progressbar">'+
+                        '<span id="percent">50%</span>'+
+                        '<div id="bar"></div>'+
+                    '</div>'+
                     '<style>'+
                         '#progressbar'+
                         '{'+
@@ -36,10 +39,16 @@ var progressbar =   '<div id="progressbar"><div id="bar"></div></div>'+
                             'padding: 0px;'+
                         '}'+
 
-                        '#progressbar > div'+
+                        '#percent'+
+                        '{'+
+                            'position: absolute;'+
+                            'left: 43%;'+
+                        '}'+
+
+                        '#bar'+
                         '{'+
                             'background-color: #00a66b;'+
-                            'width: 70%;'+
+                            'width: 50%;'+
                             'height: 20px;'+
                             'border-radius: 3px;'+
                         '}'+
@@ -89,6 +98,7 @@ function updateValues()
 
     var trend = rising * 100 / (rising + falling);
     document.getElementById("bar").style.width = trend + "%";
+    document.getElementById("percent").innerHTML = trend + "%";
 
     //if(currentValues[0][i] != "0")
     //	{console.log("(" + i + ") " + currentValues[0][i] + ": " + currentValues[1][i]);}
