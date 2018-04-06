@@ -96,7 +96,7 @@ function updateValues()
 
     current[1][i] = newValue;
 
-    var trend = rising * 100 / (rising + falling);
+    var trend = (rising * 100 / (rising + falling)).toFixed(2);
     document.getElementById("bar").style.width = trend + "%";
     document.getElementById("percent").innerHTML = trend + "%";
 
