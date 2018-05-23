@@ -25,11 +25,26 @@
 // @include       https://www.derivate.bnpparibas.com/realtime*
 // ==/UserScript==
 
+var TIME = 1000;
+
 var header = document.getElementsByClassName('content-control header');
 var progressbar =   '<div id="progressbar">'+
                         '<span id="percent">50%</span>'+
                         '<div id="bar"></div>'+
                     '</div>'+
+
+                    '<div class="timeSelection">'+
+                    '<button onclick="showContent()" class="dropbtn">'+TIME+'</button>'+
+                    '  <div id="timeSelection" class="content">'+
+                    '    <a onclick="select(1000)" class=option">1 sec</a>'+
+                    '    <a onclick="select(5000)" class=option">5 sec</a>'+
+                    '    <a onclick="select(10000)" class=option">10 sec</a>'+
+                    '    <a onclick="select(30000)" class=option">30 sec</a>'+
+                    '    <a onclick="select(60000)" class=option">1 min</a>'+
+                    '    <a onclick="select(120000)" class=option">2 min</a>'+
+                    '  </div>'+
+                    '</div>'+
+
                     '<style>'+
                         '#progressbar'+
                         '{'+
@@ -52,6 +67,51 @@ var progressbar =   '<div id="progressbar">'+
                             'height: 20px;'+
                             'border-radius: 3px;'+
                         '}'+
+
+    					'.dropbtn'+
+                        '{'+
+                        '    background-color: #3498DB;'+
+                        '    color: white;'+
+                        '    padding: 16px;'+
+                        '    font-size: 16px;'+
+                        '    border: none;'+
+                        '    cursor: pointer;'+
+                        '}'+
+
+                        '.dropbtn:hover, .dropbtn:focus'+
+                        '{'+
+                        '    background-color: #2980B9;'+
+                        '}'+
+
+                        '.dropdown'+
+                        '{'+
+                        '    position: relative;'+
+                        '    display: inline-block;'+
+                        '}'+
+
+                        '.dropdown-content'+
+                        '{'+
+                        '    display: none;'+
+                        '    position: absolute;'+
+                        '    background-color: #f1f1f1;'+
+                        '    min-width: 160px;'+
+                        '    overflow: auto;'+
+                        '    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);'+
+                        '    z-index: 1;'+
+                        '}'+
+
+                        '.dropdown-content a'+
+                        '{'+
+                        '    color: black;'+
+                        '    padding: 12px 16px;'+
+                        '    text-decoration: none;'+
+                        '    display: block;'+
+                        '}'+
+
+                        '.dropdown a:hover {background-color: #ddd}'+
+
+                        '.show {display:block;}'+
+
                     '</style>';
 
 var table = document.getElementById("realtime-table");
@@ -60,6 +120,29 @@ var course = document.evaluate("//span[@data-field='_changeAbsolute']", table, n
 var trend = [];
 var value = [];
 var current = [];
+
+/* When the user clicks on the button, 
+toggle between hiding and showing the dropdown content */
+function showContent()
+{
+    document.getElementById("timeSelection").classList.toggle("show");
+}
+
+// Close the dropdown if the user clicks outside of it
+window.onclick = function(event)
+{
+    if(!event.target.matches('.dropbtn'))
+    {
+        var dropdowns = document.getElementsByClassName("content");
+        var i;
+        for(i = 0; i < dropdowns.length; i++)
+        {
+            var openDropdown = dropdowns[i];
+            if(openDropdown.classList.contains('show'))
+                {openDropdown.classList.remove('show');}
+        }
+    }
+}
 
 function init()
 {
@@ -104,7 +187,7 @@ function updateValues()
     //	{console.log("(" + i + ") " + currentValues[0][i] + ": " + currentValues[1][i]);}
     }
 
-    window.setTimeout(updateValues, 1000);
+    window.setTimeout(updateValues, TIME);
 }
 
 init();
