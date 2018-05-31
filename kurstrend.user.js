@@ -5,7 +5,7 @@
 // Released under the GPL license
 // http://www.gnu.org/copyleft/gpl.html
 //
-// −−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−
+// −−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−− −−−−−−−−−−
 //
 // This is a Greasemonkey user script.
 //
@@ -17,7 +17,7 @@
 // To uninstall, go to Tools/Manage User Scripts,
 // select "Stock Trend", and click Uninstall.
 //
-// −−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−
+// −−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−− −−−−−−−−−−
 //
 // ==UserScript==
 // @name          Stock Trend
@@ -27,30 +27,12 @@
 
 var TIME = 1000;
 
-var header = document.getElementsByClassName('content-control header');
-var progressbar =   '<div id="progressbar">'+
-                        '<span id="percent">50%</span>'+
-                        '<div id="bar"></div>'+
-                    '</div>'+
-
-                    '<div class="timeSelection">'+
-                    '<button onclick="showContent()" class="dropbtn">'+TIME+'</button>'+
-                    '  <div id="timeSelection" class="content">'+
-                    '    <a onclick="select(1000)" class=option">1 sec</a>'+
-                    '    <a onclick="select(5000)" class=option">5 sec</a>'+
-                    '    <a onclick="select(10000)" class=option">10 sec</a>'+
-                    '    <a onclick="select(30000)" class=option">30 sec</a>'+
-                    '    <a onclick="select(60000)" class=option">1 min</a>'+
-                    '    <a onclick="select(120000)" class=option">2 min</a>'+
-                    '  </div>'+
-                    '</div>'+
-
-                    '<style>'+
+var progressbar =   '<style>'+
                         '#progressbar'+
                         '{'+
                             'background-color: #ff6142;'+
-                            'width: 85%;'+
-                            'border-radius: 3px;'+
+                            'width: 99%;'+
+                            'border-radius: 0px;'+
                             'padding: 0px;'+
                         '}'+
 
@@ -65,15 +47,15 @@ var progressbar =   '<div id="progressbar">'+
                             'background-color: #00a66b;'+
                             'width: 50%;'+
                             'height: 20px;'+
-                            'border-radius: 3px;'+
+                            'border-radius: 0px;'+
                         '}'+
 
-    					'.dropbtn'+
+                        '.dropbtn'+
                         '{'+
-                        '    background-color: #3498DB;'+
+                        '    background-color: #027499;'+
                         '    color: white;'+
-                        '    padding: 16px;'+
-                        '    font-size: 16px;'+
+    										'		 height: 20px;'+
+                        '    font-size: 12px;'+
                         '    border: none;'+
                         '    cursor: pointer;'+
                         '}'+
@@ -89,18 +71,18 @@ var progressbar =   '<div id="progressbar">'+
                         '    display: inline-block;'+
                         '}'+
 
-                        '.dropdown-content'+
+                        '.content'+
                         '{'+
                         '    display: none;'+
                         '    position: absolute;'+
                         '    background-color: #f1f1f1;'+
-                        '    min-width: 160px;'+
+                        '    min-width: 52px;'+
                         '    overflow: auto;'+
                         '    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);'+
                         '    z-index: 1;'+
                         '}'+
 
-                        '.dropdown-content a'+
+                        'content a'+
                         '{'+
                         '    color: black;'+
                         '    padding: 12px 16px;'+
@@ -108,27 +90,85 @@ var progressbar =   '<div id="progressbar">'+
                         '    display: block;'+
                         '}'+
 
+    										'content button'+
+                        '{'+
+                        '    color: black;'+
+                        '    padding: 12px 16px;'+
+                        '    text-decoration: none;'+
+                        '    display: block;'+
+                        '}'+
+    
                         '.dropdown a:hover {background-color: #ddd}'+
 
                         '.show {display:block;}'+
-
-                    '</style>';
+                    '</style>'+
+                    '<table>'+
+                        '<tr><td width="80%">'+
+    					    '<div id="progressbar">'+
+                                '<span id="percent">50%</span>'+
+                                '<div id="bar"></div>'+
+                            '</div>'+
+						'</td><td>'+
+                            '<div class="dropdown">'+
+                                '<button class="dropbtn" id="timeSelect">1 SEC</button>'+
+                                '<div id="timeSelection" class="content">'+
+                                '    <a id="option1s">1 sec</a><br>'+
+                                '    <a id="option30s">30 sec</a><br>'+
+                                '    <a id="option1m">1 min</a><br>'+
+                                '    <a id="option2m">2 min</a>'+
+                                '</div>'+
+                            '</div>'+
+    				'</td></tr>'+
+    				'<tr><td>'+
+    					'<div id="avg"></div>'+
+    				'</td></tr>'+
+    			'</table>';
 
 var table = document.getElementById("realtime-table");
 var course = document.evaluate("//span[@data-field='_changeAbsolute']", table, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
+var change = document.evaluate("//span[@data-field='_changePercent']", table, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
 
 var trend = [];
 var value = [];
 var current = [];
 
-/* When the user clicks on the button, 
-toggle between hiding and showing the dropdown content */
 function showContent()
 {
     document.getElementById("timeSelection").classList.toggle("show");
 }
 
-// Close the dropdown if the user clicks outside of it
+function setUpdateTime1s()
+{
+  	var dropdown = document.getElementById('timeSelect');  
+    dropdown.innerHTML = "1 SEC";
+	setUpdateTime(1000);
+}
+function setUpdateTime30s()
+{
+   	var dropdown = document.getElementById('timeSelect');  
+    dropdown.innerHTML = "30 SEC";
+  	setUpdateTime(30000);
+}
+function setUpdateTime1m()
+{
+  	var dropdown = document.getElementById('timeSelect');  
+    dropdown.innerHTML = "1 MIN";
+  	setUpdateTime(60000);
+}
+function setUpdateTime2m()
+{
+  	var dropdown = document.getElementById('timeSelect');  
+    dropdown.innerHTML = "2 MIN";
+  	setUpdateTime(120000);
+}
+
+function setUpdateTime(ms)
+{
+  	TIME = ms;
+  	updateValues();
+  	//console.log("NEW TIME: " + ms + "ms");
+}
+
 window.onclick = function(event)
 {
     if(!event.target.matches('.dropbtn'))
@@ -146,8 +186,22 @@ window.onclick = function(event)
 
 function init()
 {
+	var header = document.getElementsByClassName('content-control header');  
     header[0].innerHTML = progressbar;
-    for(var i = 0; i < course.snapshotLength; i++)
+  
+  	var selection = document.getElementById('timeSelect');
+  	selection.addEventListener('click', showContent, false);
+  	  
+  	var option = document.getElementById('option1s');
+  	option.addEventListener('click', setUpdateTime1s, false);
+  	option = document.getElementById('option30s');
+  	option.addEventListener('click', setUpdateTime30s, false);
+  	option = document.getElementById('option1m');
+  	option.addEventListener('click', setUpdateTime1m, false);
+  	option = document.getElementById('option2m');
+  	option.addEventListener('click', setUpdateTime2m, false);
+  
+  	for(var i = 0; i < course.snapshotLength; i++)
     {
         trend.push("0");
         value.push(parseFloat(course.snapshotItem(i).innerHTML.replace(",", ".")));
@@ -164,27 +218,27 @@ function updateValues()
 
     for(var i = 0; i < course.snapshotLength; i++)
     {
-    var newValue = parseFloat(course.snapshotItem(i).innerHTML.replace(",", "."));
-    if(newValue > current[1][i])
-        {current[0][i] = "+";rising++;}
-    else if(newValue < current[1][i])
-        {current[0][i] = "-";falling++;}
-    else
-    {
-        if(current[0][i] == "+")
-            {rising++;}
-        else if(current[0][i] == "-")
-            {falling++;}
-    }
+    		var newValue = parseFloat(course.snapshotItem(i).innerHTML.replace(",", "."));
+    		if(newValue > current[1][i])
+        		{current[0][i] = "+";rising++;}
+    		else if(newValue < current[1][i])
+        		{current[0][i] = "-";falling++;}
+    		else
+    		{
+        		if(current[0][i] == "+")
+            		{rising++;}
+        		else if(current[0][i] == "-")
+            		{falling++;}
+    	}
 
-    current[1][i] = newValue;
+    	current[1][i] = newValue;
 
-    var trend = (rising * 100 / (rising + falling)).toFixed(2);
-    document.getElementById("bar").style.width = trend + "%";
-    document.getElementById("percent").innerHTML = trend + "%";
+    	var trend = (rising * 100 / (rising + falling)).toFixed(2);
+    	document.getElementById("bar").style.width = trend + "%";
+    	document.getElementById("percent").innerHTML = "&#9650; " + trend + "%";
 
-    //if(currentValues[0][i] != "0")
-    //	{console.log("(" + i + ") " + currentValues[0][i] + ": " + currentValues[1][i]);}
+    	//if(currentValues[0][i] != "0")
+        //  {console.log("(" + i + ") " + currentValues[0][i] + ": " + currentValues[1][i]);}
     }
 
     window.setTimeout(updateValues, TIME);
@@ -192,4 +246,3 @@ function updateValues()
 
 init();
 updateValues();
-
