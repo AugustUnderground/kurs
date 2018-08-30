@@ -101,6 +101,82 @@ var progressbar =   '<style>'+
                         '.dropdown a:hover {background-color: #ddd}'+
 
                         '.show {display:block;}'+
+
+                        '.modal'+
+                        '{'+
+                            'display: none;'+
+                            'position: fixed;'+
+                            'z-index: 1000;'+
+                            'padding-top: 155px;'+
+                            'left: 0;'+
+                            'top: 0;'+
+                            'width: 100%;'+
+                            'height: 100%;'+
+                            'overflow: auto;'+
+                            'background-color: rgb(0,0,0);'+
+                            'background-color: rgba(0,0,0,0.4);'+
+                        '}'+
+                        
+                        '.modal-content'+
+                        '{'+
+                            'background-color: #fefefe;'+
+                            'margin: auto;'+
+                            'padding: 20px;'+
+                            'border: 1px solid #888;'+
+                            'width: 80%;'+
+                        '}'+
+
+                        '.close'+
+                        '{'+
+                            'color: #aaaaaa;'+
+                            'float: right;'+
+                            'font-size: 28px;'+
+                            'font-weight: bold;'+
+                        '}'+
+
+                        '.close:hover, .close:focus'+
+                        '{'+
+                            'color: #000;'+
+                            'text-decoration: none;'+
+                            'cursor: pointer;'+
+                        '}'+
+
+                        '#protoTable'+
+                        '{'+
+                            'font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;'+
+                            'border-collapse: collapse;'+
+                            'width: 100%;'+
+                        '}'+
+
+                        '#protoTable td, #protoTable th'+
+                        '{'+
+                            'border: 1px solid #ddd;'+
+                            'padding: 8px;'+
+                        '}'+
+
+                        '#protoTable tr:nth-child(even){background-color: #f2f2f2;}'+
+
+                        '#protoTable tr:hover {background-color: #ddd;}'+
+
+                        '#protoTable th'+
+                        '{'+
+                            'padding-top: 12px;'+
+                            'padding-bottom: 12px;'+
+                            'text-align: left;'+
+                            'background-color: #027499;'+
+                            'color: white;'+
+                        '}'+
+                        
+                        'td.rising'+
+                        '{'+
+                            'color: #00a66b'+
+                        '}'+
+
+                        'td.falling'+
+                        '{'+
+                            'color: #ff6142'+
+                        '}'+
+
                     '</style>'+
                     '<table>'+
                         '<tr><td width="80%">'+
@@ -109,15 +185,16 @@ var progressbar =   '<style>'+
                                 '<div id="bar"></div>'+
                             '</div>'+
 						'</td><td>'+
-                            '<div class="dropdown">'+
-                                '<button class="dropbtn" id="timeSelect">1 SEC</button>'+
-                                '<div id="timeSelection" class="content">'+
-                                '    <a id="option1s">1 sec</a><br>'+
-                                '    <a id="option30s">30 sec</a><br>'+
-                                '    <a id="option1m">1 min</a><br>'+
-                                '    <a id="option2m">2 min</a>'+
-                                '</div>'+
-                            '</div>'+
+                        '<button class="dropbtn" id="protoBtn">Protokoll</button>'+
+               			'<div id="protoModal" class="modal">'+
+  							'<div class="modal-content">'+
+    							'<span id="protoClose" class="close">&times;</span>'+
+    							'<h2>Protokoll des durschnittlichen Kurses:</h2>'+
+    							'<table id="protoTable">'+
+                          			'<tr><th>Zeitstempel</th><th>Kurs</th></tr>'+
+								'</table>'+
+  							'</div>'+
+						'</div>'+
     				'</td></tr>'+
     				'<tr><td>'+
     					'<div id="avg"></div>'+
@@ -128,13 +205,27 @@ var table = document.getElementById("realtime-table");
 var course = document.evaluate("//span[@data-field='_changeAbsolute']", table, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
 var change = document.evaluate("//span[@data-field='_changePercent']", table, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
 
-var trend = [];
-var value = [];
 var current = [];
+
+var avgBuffer = [0];
+var avgProtocol = [];
+var avgTimer = 120000; //300000;
+
 
 function showContent()
 {
-    document.getElementById("timeSelection").classList.toggle("show");
+    var protoModal = document.getElementById("protoModal");
+  	var closeBtn = document.getElementById("protoClose");
+
+  	protoModal.style.display = "block";
+  
+  	closeBtn.onclick = () => {protoModal.style.display = "none";};
+  
+  	window.onclick = (event) =>
+        {
+    		if(event.target == protoModal)
+                {protoModal.style.display = "none";}
+		};
 }
 
 function setUpdateTime1s()
@@ -186,20 +277,25 @@ window.onclick = function(event)
 
 function init()
 {
-	var header = document.getElementsByClassName('content-control header');  
+    var trend = [];
+    var value = [];
+    var header = document.getElementsByClassName('content-control header');  
     header[0].innerHTML = progressbar;
   
-  	var selection = document.getElementById('timeSelect');
-  	selection.addEventListener('click', showContent, false);
-  	  
-  	var option = document.getElementById('option1s');
-  	option.addEventListener('click', setUpdateTime1s, false);
-  	option = document.getElementById('option30s');
-  	option.addEventListener('click', setUpdateTime30s, false);
-  	option = document.getElementById('option1m');
-  	option.addEventListener('click', setUpdateTime1m, false);
-  	option = document.getElementById('option2m');
-  	option.addEventListener('click', setUpdateTime2m, false);
+  	//var selection = document.getElementById('timeSelect');
+  	//selection.addEventListener('click', showContent, false);
+  	
+  	var protoBtn = document.getElementById('protoBtn');
+  	protoBtn.addEventListener('click', showContent, false);
+  	
+  	//var option = document.getElementById('option1s');
+  	//option.addEventListener('click', setUpdateTime1s, false);
+  	//option = document.getElementById('option30s');
+  	//option.addEventListener('click', setUpdateTime30s, false);
+  	//option = document.getElementById('option1m');
+  	//option.addEventListener('click', setUpdateTime1m, false);
+  	//option = document.getElementById('option2m');
+  	//option.addEventListener('click', setUpdateTime2m, false);
   
   	for(var i = 0; i < course.snapshotLength; i++)
     {
@@ -211,10 +307,31 @@ function init()
     current.push(value);
 }
 
+function calculateAvg()
+{
+  	if(avgBuffer.length > 1)
+    {
+  	    var sum = avgBuffer.reduce((a, b) => {return a + b;});
+  	    var avg = sum / avgBuffer.length;
+      
+      	avgProtocol.push({timeStamp: Date(), value: avg.toFixed(2)});
+      	
+      	var tableRow = `<tr><td>${avgProtocol.slice(-1)[0].timeStamp}</td><td class="${avg > 50? 'rising':'falling'}">${avgProtocol.slice(-1)[0].value}%</td></tr>`;
+      
+      	var protoTable = document.getElementById('protoTable');
+      	protoTable.innerHTML = `${protoTable.innerHTML}${tableRow}`;
+  	
+  		avgBuffer.length = 0;
+    }
+      
+  	window.setTimeout(calculateAvg, avgTimer);
+}
+
 function updateValues()
 {
     var falling = 0;
     var rising = 0;
+  
 
     for(var i = 0; i < course.snapshotLength; i++)
     {
@@ -236,6 +353,11 @@ function updateValues()
     	var trend = (rising * 100 / (rising + falling)).toFixed(2);
     	document.getElementById("bar").style.width = trend + "%";
     	document.getElementById("percent").innerHTML = "&#9650; " + trend + "%";
+      
+      if(!isNaN(Number(trend)))
+      {
+      		avgBuffer.push(Number(trend));
+      }
 
     	//if(currentValues[0][i] != "0")
         //  {console.log("(" + i + ") " + currentValues[0][i] + ": " + currentValues[1][i]);}
@@ -246,3 +368,4 @@ function updateValues()
 
 init();
 updateValues();
+calculateAvg();
