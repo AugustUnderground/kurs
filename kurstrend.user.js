@@ -101,82 +101,90 @@ var progressbar =   '<style>'+
                         '.dropdown a:hover {background-color: #ddd}'+
 
                         '.show {display:block;}'+
+    
+    										'.modal'+
+    										'{'+
+    												'display: none;'+
+    												'position: fixed;'+
+    												'z-index: 1000;'+
+    												'padding-top: 155px;'+
+    												'left: 0;'+
+    												'top: 0;'+
+    												'width: 100%;'+
+    												'height: 100%;'+
+    												'overflow: auto;'+
+    												'background-color: rgb(0,0,0);'+
+    												'background-color: rgba(0,0,0,0.4);'+
+												'}'+
+											
+    										'.modal-content'+
+    										'{'+
+    												'background-color: #fefefe;'+
+    												'margin: auto;'+
+    												'padding: 20px;'+
+    												'border: 1px solid #888;'+
+    												'width: 80%;'+
+    												'height: 80%'+
+    												'overflow: auto'+
+												'}'+
 
-                        '.modal'+
-                        '{'+
-                            'display: none;'+
-                            'position: fixed;'+
-                            'z-index: 1000;'+
-                            'padding-top: 155px;'+
-                            'left: 0;'+
-                            'top: 0;'+
-                            'width: 100%;'+
-                            'height: 100%;'+
-                            'overflow: auto;'+
-                            'background-color: rgb(0,0,0);'+
-                            'background-color: rgba(0,0,0,0.4);'+
-                        '}'+
-                        
-                        '.modal-content'+
-                        '{'+
-                            'background-color: #fefefe;'+
-                            'margin: auto;'+
-                            'padding: 20px;'+
-                            'border: 1px solid #888;'+
-                            'width: 80%;'+
-                        '}'+
+												'.close'+
+    										'{'+
+    												'color: #aaaaaa;'+
+    												'float: right;'+
+    												'font-size: 28px;'+
+    												'font-weight: bold;'+
+												'}'+
 
-                        '.close'+
-                        '{'+
-                            'color: #aaaaaa;'+
-                            'float: right;'+
-                            'font-size: 28px;'+
-                            'font-weight: bold;'+
-                        '}'+
+												'.close:hover, .close:focus'+
+    										'{'+
+    												'color: #000;'+
+    												'text-decoration: none;'+
+    												'cursor: pointer;'+
+												'}'+
+    
+    										'#protoTable'+
+    										'{'+
+    												'font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;'+
+    												'border-collapse: collapse;'+
+    												'width: 100%;'+
+    												'height: 100%'+
+												'}'+
 
-                        '.close:hover, .close:focus'+
-                        '{'+
-                            'color: #000;'+
-                            'text-decoration: none;'+
-                            'cursor: pointer;'+
-                        '}'+
+												'#protoTable td, #protoTable th'+
+    										'{'+
+    												'border: 1px solid #ddd;'+
+    												'padding: 8px;'+
+												'}'+
 
-                        '#protoTable'+
-                        '{'+
-                            'font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;'+
-                            'border-collapse: collapse;'+
-                            'width: 100%;'+
-                        '}'+
+												'#protoTable tr:nth-child(even){background-color: #f2f2f2;}'+
 
-                        '#protoTable td, #protoTable th'+
-                        '{'+
-                            'border: 1px solid #ddd;'+
-                            'padding: 8px;'+
-                        '}'+
+												'#protoTable tr:hover {background-color: #ddd;}'+
 
-                        '#protoTable tr:nth-child(even){background-color: #f2f2f2;}'+
-
-                        '#protoTable tr:hover {background-color: #ddd;}'+
-
-                        '#protoTable th'+
-                        '{'+
-                            'padding-top: 12px;'+
-                            'padding-bottom: 12px;'+
-                            'text-align: left;'+
-                            'background-color: #027499;'+
-                            'color: white;'+
-                        '}'+
-                        
-                        'td.rising'+
-                        '{'+
-                            'color: #00a66b'+
-                        '}'+
-
-                        'td.falling'+
-                        '{'+
-                            'color: #ff6142'+
-                        '}'+
-
+												'#protoTable th'+
+												'{'+
+    												'padding-top: 12px;'+
+    												'padding-bottom: 12px;'+
+    												'text-align: left;'+
+    												'background-color: #027499;'+
+    												'color: white;'+
+												'}'+
+    										
+    										'td.rising'+
+    										'{'+
+    												'color: #00a66b;'+
+    										'}'+
+    
+    										'td.falling'+
+    										'{'+
+    												'color: #ff6142;'+
+    										'}'+
+												
+    										'div.proto-container'+
+    										'{'+
+    												'max-height: 400px;'+
+    												'overflow: auto;'+
+    										'}'+
                     '</style>'+
                     '<table>'+
                         '<tr><td width="80%">'+
@@ -184,17 +192,20 @@ var progressbar =   '<style>'+
                                 '<span id="percent">50%</span>'+
                                 '<div id="bar"></div>'+
                             '</div>'+
-						'</td><td>'+
-                        '<button class="dropbtn" id="protoBtn">Protokoll</button>'+
-               			'<div id="protoModal" class="modal">'+
-  							'<div class="modal-content">'+
-    							'<span id="protoClose" class="close">&times;</span>'+
-    							'<h2>Protokoll des durschnittlichen Kurses:</h2>'+
-    							'<table id="protoTable">'+
-                          			'<tr><th>Zeitstempel</th><th>Kurs</th></tr>'+
-								'</table>'+
-  							'</div>'+
-						'</div>'+
+									'</td><td>'+
+                        '<button class="dropbtn" id="graphBtn">Graph</button>&nbsp;'+
+                        '<button class="dropbtn" id="protoBtn">Log</button>'+
+               					'<div id="protoModal" class="modal">'+
+  													'<div class="modal-content">'+
+    														'<span id="protoClose" class="close">&times;</span>'+
+    														'<h2>Protokoll des durschnittlichen Kurses:</h2>'+
+    														'<div class="proto-container">'+
+    																'<table id="protoTable">'+
+                          							'<tr><th>Zeitstempel</th><th>Kurs</th></tr>'+
+																		'</table>'+
+    														'</div>'+
+  													'</div>'+
+												'</div>'+
     				'</td></tr>'+
     				'<tr><td>'+
     					'<div id="avg"></div>'+
@@ -222,10 +233,10 @@ function showContent()
   	closeBtn.onclick = () => {protoModal.style.display = "none";};
   
   	window.onclick = (event) =>
-        {
-    		if(event.target == protoModal)
-                {protoModal.style.display = "none";}
-		};
+    		{
+    				if(event.target == protoModal)
+            		{protoModal.style.display = "none";}
+				};
 }
 
 function setUpdateTime1s()
@@ -277,9 +288,9 @@ window.onclick = function(event)
 
 function init()
 {
-    var trend = [];
-    var value = [];
-    var header = document.getElementsByClassName('content-control header');  
+		var trend = [];
+		var value = [];
+		var header = document.getElementsByClassName('content-control header');  
     header[0].innerHTML = progressbar;
   
   	//var selection = document.getElementById('timeSelect');
@@ -311,8 +322,8 @@ function calculateAvg()
 {
   	if(avgBuffer.length > 1)
     {
-  	    var sum = avgBuffer.reduce((a, b) => {return a + b;});
-  	    var avg = sum / avgBuffer.length;
+  			var sum = avgBuffer.reduce((a, b) => {return a + b;});
+  			var avg = sum / avgBuffer.length;
       
       	avgProtocol.push({timeStamp: Date(), value: avg.toFixed(2)});
       	
@@ -321,7 +332,7 @@ function calculateAvg()
       	var protoTable = document.getElementById('protoTable');
       	protoTable.innerHTML = `${protoTable.innerHTML}${tableRow}`;
   	
-  		avgBuffer.length = 0;
+  			avgBuffer.length = 0;
     }
       
   	window.setTimeout(calculateAvg, avgTimer);
